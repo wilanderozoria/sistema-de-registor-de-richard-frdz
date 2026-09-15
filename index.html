@@ -306,24 +306,82 @@
   .sign-under{display:block; border-bottom:1px solid var(--silver); height:34px;}
   .sign-label{display:block; margin-top:6px; font-size:0.75rem; color:var(--muted);}
 
-  @media print{
-    body *{visibility:hidden;}
-    #receiptPrint, #receiptPrint *{visibility:visible;}
-    #receiptPrint{
-      position:absolute; left:0; top:0; width:100%; max-width:100%;
-      border:none; box-shadow:none; background:#fff; color:#111; padding:20px;
-    }
-    #receiptPrint .modal-close, #receiptPrint .modal-actions{display:none;}
-    #receiptPrint .brand-name b{color:#c1121f;}
-    #receiptPrint .brand-name span{color:#1b5fd6;}
-    #receiptPrint .quote-line, #receiptPrint .receipt-tag, #receiptPrint .receipt-date, #receiptPrint .quote-note{color:#222; border-color:#ccc;}
-    #receiptPrint .agreement{border-color:#ccc;}
-    #receiptPrint .agreement h4{color:#111;}
-    #receiptPrint .agreement p{color:#333;}
-    #receiptPrint .sign-under{border-color:#555;}
-    #receiptPrint .sign-label{color:#333;}
-  }
+  @media print {
+    body * { visibility: hidden !important; }
 
+    /* Show only the modal that is currently open */
+    #orderModal.open, #orderModal.open *,
+    #invoiceModal.open, #invoiceModal.open * {
+      visibility: visible !important;
+    }
+
+    #orderModal, #invoiceModal {
+      position: static !important;
+      display: block !important;
+      background: white !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: 80mm !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      color: black !important;
+    }
+
+    #receiptPrint, #invoicePrint {
+      width: 80mm !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      border: none !important;
+      background: white !important;
+      box-shadow: none !important;
+      color: black !important;
+    }
+
+    .modal-close, .modal-actions, #closeModalBtn, #printBtn, #waFromModalBtn, #closeInvoiceModal, #printInvoiceBtn, #waInvoiceBtn {
+      display: none !important;
+    }
+
+    .quote-line, .receipt-line {
+      color: black !important;
+      border-bottom: 1px dashed #ccc !important;
+      padding: 4px 0 !important;
+      font-size: 12px !important;
+      display: flex !important;
+      justify-content: space-between !important;
+    }
+
+    .quote-line span, .receipt-line span {
+      color: black !important;
+    }
+
+    .receipt-brand {
+      text-align: center !important;
+      margin-bottom: 10px !important;
+    }
+
+    .receipt-brand img {
+      max-width: 50px !important;
+      filter: grayscale(100%) !important;
+    }
+
+    .total {
+      font-weight: bold !important;
+      font-size: 14px !important;
+      border-top: 2px solid black !important;
+      margin-top: 10px !important;
+    }
+
+    header, .hero, .section, footer, .nav, .divider, .wrap {
+      display: none !important;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  }
   @media (max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
     .hero-visual{order:-1;}
@@ -338,71 +396,33 @@
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
   }
-  @media print {
-    header, .hero, .section, footer, .nav, .divider, .wrap {
-      display: none !important;
-    }
-    body {
-      background: white !important;
-      color: black !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    #orderModal {
-      position: static !important;
-      display: block !important;
-      background: white !important;
-      border: none !important;
-      box-shadow: none !important;
-      overflow: visible !important;
-    }
-    #receiptPrint {
-      width: 80mm !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
-      border: none !important;
-      background: white !important;
-      box-shadow: none !important;
-      color: black !important;
-    }
-    .modal-close, #closeModalBtn, #printBtn, #waFromModalBtn {
-      display: none !important;
-    }
-    .quote-line {
-      color: black !important;
-      border-bottom: 1px dashed #ccc !important;
-      padding: 4px 0 !important;
-      font-size: 12px !important;
-      display: flex !important;
-      justify-content: space-between !important;
-    }
-    .quote-line span {
-      color: black !important;
-    }
-    .receipt-brand {
-      text-align: center !important;
-      margin-bottom: 10px !important;
-    }
-    .receipt-brand img {
-      max-width: 50px !important;
-      filter: grayscale(100%) !important;
-    }
-    .receipt-tag {
-      text-align: center !important;
-      font-weight: bold !important;
-      text-transform: uppercase !important;
-      margin-bottom: 10px !important;
-      color: black !important;
-    }
-    .total {
-      font-weight: bold !important;
-      font-size: 14px !important;
-      border-top: 2px solid black !important;
-      margin-top: 10px !important;
-    }
+  .btn-release {
+    background: var(--accent) !important;
+    color: var(--white) !important;
+    border: none !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    transition: filter 0.2s !important;
   }
-  /* Repair Table Styles */
-  .repair-table {
+  .btn-release:hover {
+    filter: brightness(1.2) !important;
+  }
+  .btn-delete {
+    background: #ff4d4d !important;
+    color: white !important;
+    border: none !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    transition: filter 0.2s !important;
+  }
+  .btn-delete:hover {
+    filter: brightness(1.2) !important;
+  }
+
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
@@ -640,7 +660,7 @@
       <div class="foot-links">
         <a href="#cotizar">Cotizar</a>
         <a href="#como-funciona">Cómo funciona</a>
-        <a href="https://wa.me/18097809260" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://wa.me/18090000000" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>
     <div class="copyright">© 2026 Richard FdezGsm. Todos los derechos reservados.</div>
@@ -648,7 +668,7 @@
 </footer>
 
 <!-- Botón flotante de WhatsApp (contacto general) -->
-<a href="https://wa.me/18097809260" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Escríbenos por WhatsApp">
+<a href="https://wa.me/18090000000" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Escríbenos por WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.06 0C5.6 0 .35 5.24.35 11.7c0 2.06.54 4.07 1.56 5.85L.25 24l6.6-1.73a11.7 11.7 0 0 0 5.2 1.23h.01c6.46 0 11.7-5.24 11.7-11.7 0-3.13-1.22-6.07-3.26-8.3ZM12.06 21.4h-.01a9.7 9.7 0 0 1-4.94-1.35l-.35-.21-3.68.97.98-3.58-.23-.37a9.68 9.68 0 0 1-1.48-5.16c0-5.36 4.37-9.72 9.73-9.72 2.6 0 5.04 1.01 6.88 2.85a9.65 9.65 0 0 1 2.85 6.87c0 5.36-4.37 9.7-9.75 9.7Zm5.33-7.28c-.29-.15-1.72-.85-1.99-.95-.27-.1-.46-.15-.66.15-.19.29-.75.95-.92 1.15-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.5-.66-.51-.17-.01-.36-.01-.56-.01-.19 0-.51.07-.78.36-.27.29-1.02 1-1.02 2.43 0 1.43 1.05 2.81 1.19 3 .15.19 2.06 3.15 5 4.42.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.11.56-.08 1.72-.7 1.96-1.38.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34Z"/></svg>
 </a>
 
@@ -749,6 +769,10 @@
           <input type="text" id="repairMissingParts" placeholder="Ej. Bandeja SIM, Tornillos">
         </div>
         <div class="field">
+          <label>Precio Estimado (RD$)</label>
+          <input type="number" id="repairPrice" placeholder="0.00" step="0.01">
+        </div>
+        <div class="field">
           <label>Fecha de Ingreso</label>
           <input type="date" id="repairDate" readonly>
         </div>
@@ -774,6 +798,68 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="invoiceModal" class="modal-overlay">
+  <div class="modal-card" id="invoicePrint">
+    <button class="modal-close" id="closeInvoiceModal" aria-label="Cerrar">&times;</button>
+    <div class="receipt-brand">
+      <div class="brand-mark">
+        <strong style="font-size: 1.5rem; color: var(--white);">Richard FdezGsm</strong>
+      </div>
+      <div class="brand-info">
+        <p>Servicio Técnico Profesional</p>
+        <p>Tel: 809-780-9260</p>
+      </div>
+    </div>
+
+    <div class="receipt-details">
+      <div class="receipt-line">
+        <span>Cliente:</span> <span id="invClient">________________</span>
+      </div>
+      <div class="receipt-line">
+        <span>Cédula:</span> <span id="invCedula">________________</span>
+      </div>
+      <div class="receipt-line">
+        <span>Teléfono:</span> <span id="invPhone">________________</span>
+      </div>
+      <hr style="border: 0; border-top: 1px dashed var(--line); margin: 12px 0;">
+      <div class="receipt-line">
+        <span>Equipo:</span> <span id="invBrand">________________</span>
+      </div>
+      <div class="receipt-line">
+        <span>IMEI:</span> <span id="invImei">________________</span>
+      </div>
+      <div class="receipt-line">
+        <span>Servicio:</span> <span>Reparación Técnica</span>
+      </div>
+      <hr style="border: 0; border-top: 1px dashed var(--line); margin: 12px 0;">
+      <div class="receipt-line total">
+        <span>Total a Pagar:</span> <span id="invTotal">RD$ 0.00</span>
+      </div>
+    </div>
+
+    <div class="agreement" style="margin-top: 24px;">
+      <p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">
+        Gracias por confiar en nosotros. El equipo ha sido entregado en óptimas condiciones.
+      </p>
+      <div class="agreement-signature">
+        <div class="sign-line">
+          <span class="sign-under"></span>
+          <span class="sign-label">Firma del Cliente</span>
+        </div>
+        <div class="sign-line">
+          <span class="sign-under"></span>
+          <span class="sign-label">Fecha de Entrega</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary btn-block" id="printInvoiceBtn">Imprimir Factura</button>
+      <button class="btn-whatsapp" id="waInvoiceBtn">Enviar por WhatsApp</button>
     </div>
   </div>
 </div>
@@ -1006,11 +1092,60 @@
           <small>${entry.date}</small>
         </td>
         <td>
+          <button class="btn-release" onclick="releaseRepairEntry(${index})">Salida</button>
           <button class="btn-delete" onclick="deleteRepairEntry(${index})">Borrar</button>
         </td>
       `;
       tbody.appendChild(row);
     });
+  }
+
+  function releaseRepairEntry(index) {
+    const entry = repairEntries[index];
+    const defaultPrice = entry.price || '0.00';
+    const price = prompt(`Ingrese el monto total de la reparación para ${entry.client}:`, defaultPrice);
+
+    if (price === null) return; // Cancelled
+
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice)) {
+      alert('Por favor, ingrese un monto válido.');
+      return;
+    }
+
+    // Populate invoice modal
+    document.getElementById('invClient').textContent = entry.client;
+    document.getElementById('invCedula').textContent = entry.cedula || 'N/A';
+    document.getElementById('invPhone').textContent = entry.phone || 'N/A';
+    document.getElementById('invBrand').textContent = entry.brand;
+    document.getElementById('invImei').textContent = entry.imei;
+    document.getElementById('invTotal').textContent = fmt(numericPrice);
+
+    // Show modal
+    document.getElementById('invoiceModal').classList.add('open');
+
+    // We store the current released entry and price for WhatsApp/Print
+    window.currentReleasedEntry = { ...entry, finalPrice: numericPrice };
+  }
+
+  function closeInvoiceModal() {
+    document.getElementById('invoiceModal').classList.remove('open');
+    window.currentReleasedEntry = null;
+  }
+
+  function printInvoice() {
+    window.print();
+  }
+
+  function sendInvoiceWhatsApp() {
+    const d = window.currentReleasedEntry;
+    if (!d) return;
+    const msg = `Hola, adjunto la factura de reparación:%0A` +
+      `Cliente: ${d.client}%0A` +
+      `Equipo: ${d.brand} (IMEI: ${d.imei})%0A` +
+      `Total a Pagar: ${fmt(d.finalPrice)}%0A` +
+      `Gracias por su preferencia.`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
   }
 
   function deleteRepairEntry(index) {
@@ -1029,6 +1164,7 @@
     const brand = document.getElementById('repairBrand').value.trim();
     const condition = document.getElementById('repairCondition').value.trim() || 'No especificada';
     const missing = document.getElementById('repairMissingParts').value.trim() || 'Ninguna';
+    const price = document.getElementById('repairPrice').value.trim() || '0';
     const date = document.getElementById('repairDate').value;
 
     if (!client) {
@@ -1036,7 +1172,7 @@
       return;
     }
 
-    const entry = { client, cedula, phone, imei, brand, condition, missing, date };
+    const entry = { client, cedula, phone, imei, brand, condition, missing, price, date };
     repairEntries.push(entry);
     saveRepairToLocal();
     renderRepairList();
@@ -1049,14 +1185,19 @@
     document.getElementById('repairBrand').value = '';
     document.getElementById('repairCondition').value = '';
     document.getElementById('repairMissingParts').value = '';
+    document.getElementById('repairPrice').value = '';
     initRepairDate();
   });
 
   document.getElementById('closeRepairModal').addEventListener('click', closeRepairModal);
+  document.getElementById('closeInvoiceModal').addEventListener('click', closeInvoiceModal);
+  document.getElementById('printInvoiceBtn').addEventListener('click', printInvoice);
+  document.getElementById('waInvoiceBtn').addEventListener('click', sendInvoiceWhatsApp);
 
   window.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('repairModal')) {
-      closeRepairModal();
+    if (e.target === document.getElementById('repairModal') || e.target === document.getElementById('invoiceModal')) {
+      if (e.target.id === 'repairModal') closeRepairModal();
+      if (e.target.id === 'invoiceModal') closeInvoiceModal();
     }
   });
 

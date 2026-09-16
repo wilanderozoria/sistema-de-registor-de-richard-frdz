@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Repository Overview
-This project is a single-page web application for a shopping and logistics service (Richard FdezGsm). It provides a professional landing page with an integrated interactive quote calculator that generates order summaries and sends them via WhatsApp.
+This project is a single-page web application for a shopping and logistics service (Richard FdezGsm). It provides a professional landing page with an integrated interactive quote calculator, a repair equipment tracking system, and an accessories sales module.
 
 ## Technical Architecture
 - **Stack**: Pure Vanilla HTML5, CSS3, and JavaScript (No external frameworks).
@@ -14,15 +14,24 @@ This project is a single-page web application for a shopping and logistics servi
   - Specialized `@media print` rules to format receipts for 80mm thermal printers.
 - **Logic**:
   - Real-time calculation engine for product totals, commissions, and shipping.
-  - Dynamic DOM manipulation for updating the quote summary and receipt modal.
-  - WhatsApp API integration for sending formatted order data.
+  - LocalStorage for persisting repair entries and sales data.
+  - Dynamic DOM manipulation for updating quotes, repair lists, and invoice modals.
+  - WhatsApp API integration for sending formatted order and invoice data.
 
 ## Key Components
-- **Cotizador**: The main functional area where users input order details.
-- **Order Modal**: A receipt preview that allows the user to verify data before printing or sending.
-- **Print Engine**: Custom CSS that hides the UI and isolates the receipt for thermal printing.
+- **Cotizador**: The main functional area for shopping quotes.
+- **Entrada de Equipos**: Management of received devices for repair, including registration and release (exit) flow.
+- **Ventas**: Module for selling accessories/parts with warranty tracking.
+- **Invoice Modals**: Separate modal views for shopping receipts, repair exits, and sales invoices.
+- **Print Engine**: Custom CSS that isolates the active receipt for thermal printing while hiding all UI controls.
 
 ## Development Guidance
 - **Testing**: Open `index.html` in any modern web browser.
-- **Printing**: To test the receipt format, open the Order Modal and use the browser's print dialog (Ctrl+P).
-- **Configuration**: The WhatsApp number is stored as a constant `WHATSAPP_NUMBER` at the beginning of the `<script>` block.
+- **Printing**: To test receipt formats, open a modal and use Ctrl+P. Verify that only the receipt content is visible.
+- **Configuration**: The WhatsApp number is stored as a constant `WHATSAPP_NUMBER` in the `<script>` block.
+
+## Critical Printing & UI Pitfalls (Lessons Learned)
+- **Print Visibility**: When using `@media print`, avoid using `* { visibility: visible }` on modals as it reveals hidden UI elements (buttons). Only target the specific print card (e.g., `#invoicePrint`).
+- **Modal Overlap**: Always close all other active modals (`.remove('open')`) before opening a specific invoice modal to prevent CSS conflicts and ensure the correct content is printed.
+- **Thermal Layout**: Keep receipt content narrow (max 80mm) and use dashed borders for a professional thermal look.
+- **Single File Maintenance**: Since the project is a single large `index.html`, use precise line numbers or unique identifiers when editing to avoid corrupting the structure.

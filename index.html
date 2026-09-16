@@ -19,6 +19,7 @@
     --silver: #b9c2cf;
     --white: #f4f6f9;
     --muted: #8b93a3;
+    --accent: var(--blue);
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -307,44 +308,61 @@
   .sign-label{display:block; margin-top:6px; font-size:0.75rem; color:var(--muted);}
 
   @media print {
-    body * { visibility: hidden !important; }
-
-    /* Show only the modal that is currently open */
-    #orderModal.open, #orderModal.open *,
-    #invoiceModal.open, #invoiceModal.open * {
-      visibility: visible !important;
-    }
-
-    #orderModal, #invoiceModal {
-      position: static !important;
-      display: block !important;
-      background: white !important;
-      border: none !important;
-      box-shadow: none !important;
-      width: 80mm !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
-      color: black !important;
-    }
-
-    #receiptPrint, #invoicePrint {
-      width: 80mm !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
-      border: none !important;
-      background: white !important;
-      box-shadow: none !important;
-      color: black !important;
-    }
-
-    .modal-close, .modal-actions, #closeModalBtn, #printBtn, #waFromModalBtn, #closeInvoiceModal, #printInvoiceBtn, #waInvoiceBtn {
+    /* Hide everything by default */
+    body * {
       display: none !important;
     }
 
+    /* Show only the open modal */
+    #orderModal.open, #invoiceModal.open, #salesInvoiceModal.open {
+      display: block !important;
+      visibility: visible !important;
+    }
+
+    /* Show only the content cards and their children */
+    #receiptPrint, #receiptPrint *,
+    #invoicePrint, #invoicePrint *,
+    #salesReceiptPrint, #salesReceiptPrint * {
+      display: block !important;
+      visibility: visible !important;
+    }
+
+    /* Modal resets for print */
+    #orderModal, #invoiceModal, #salesInvoiceModal {
+      position: static !important;
+      width: 80mm !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      background: white !important;
+      color: black !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    #receiptPrint, #invoicePrint, #salesReceiptPrint {
+      width: 80mm !important;
+      margin: 0 auto !important;
+      padding: 10px 0 !important;
+      border: none !important;
+      background: white !important;
+      color: black !important;
+    }
+
+    /* Hide UI elements in print */
+    .modal-close,
+    .modal-actions,
+    .modal-actions *,
+    #closeModalBtn, #printBtn, #waFromModalBtn,
+    #closeInvoiceModal, #printInvoiceBtn, #waInvoiceBtn, #closeSalesInvoiceModal, #printSalesInvoiceBtn, #waSalesInvoiceBtn {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    /* Receipt line styles */
     .quote-line, .receipt-line {
       color: black !important;
       border-bottom: 1px dashed #ccc !important;
-      padding: 4px 0 !important;
+      padding: 10px 0 !important;
       font-size: 12px !important;
       display: flex !important;
       justify-content: space-between !important;
@@ -356,30 +374,33 @@
 
     .receipt-brand {
       text-align: center !important;
-      margin-bottom: 10px !important;
+      margin-bottom: 30px !important;
     }
 
-    .receipt-brand img {
-      max-width: 50px !important;
-      filter: grayscale(100%) !important;
+    .agreement {
+      margin-top: 40px !important;
+      padding-top: 20px !important;
+      border-top: 1px solid black !important;
+      text-align: center !important;
+    }
+
+    .agreement-signature {
+      margin-top: 40px !important;
+      display: flex !important;
+      justify-content: space-around !important;
+    }
+
+    .sign-under {
+      border-bottom: 1px solid black !important;
+      height: 40px !important;
     }
 
     .total {
       font-weight: bold !important;
-      font-size: 14px !important;
+      font-size: 16px !important;
       border-top: 2px solid black !important;
-      margin-top: 10px !important;
-    }
-
-    header, .hero, .section, footer, .nav, .divider, .wrap {
-      display: none !important;
-    }
-
-    body {
-      background: white !important;
-      color: black !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      margin-top: 30px !important;
+      padding-top: 10px !important;
     }
   }
   @media (max-width:860px){
@@ -388,8 +409,8 @@
     .steps{grid-template-columns:1fr;}
     .step + .step{border-left:none; border-top:1px solid var(--line);}
     .calc-grid{grid-template-columns:1fr;}
-    .platform-grid{grid-template-columns:repeat(3,1fr);}
-    .platform-cards{grid-template-columns:repeat(3,1fr);}
+    .platform-grid{grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));}
+    .platform-cards{grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));}
     nav.links{display:none;}
     .row-two{grid-template-columns:1fr;}
   }
@@ -423,6 +444,7 @@
     filter: brightness(1.2) !important;
   }
 
+  .repair-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
@@ -455,7 +477,34 @@
     background: var(--red);
     color: white;
   }
+  .btn-tab {
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--silver);
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all .2s;
+  }
+  .btn-tab.active {
+    background: var(--accent);
+    color: var(--white);
+    border-color: var(--accent);
+  }
+  .btn-tab:hover:not(.active) {
+    background: var(--line);
+    color: var(--white);
+  }
+  .inventory-tab-content {
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -469,6 +518,8 @@
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#cotizar">Cotizar compra</a>
       <a href="javascript:void(0)" onclick="openRepairModal()">Entrada de Equipos</a>
+      <a href="javascript:void(0)" id="openSalesModal">Ventas</a>
+      <a href="javascript:void(0)" onclick="openInventoryModal()">Inventario</a>
       <a href="#contacto">Contacto</a>
     </nav>
     <a href="#cotizar" class="nav-cta">Cotizar ahora</a>
@@ -802,6 +853,281 @@
   </div>
 </div>
 
+<div id="salesInvoiceModal" class="modal-overlay">
+  <div class="modal-card" id="salesReceiptPrint">
+    <button class="modal-close" id="closeSalesInvoiceModal" aria-label="Cerrar">&times;</button>
+    <div class="receipt-brand">
+      <div class="brand-mark">
+        <strong style="font-size: 1.5rem; color: var(--white);">Richard FdezGsm</strong>
+      </div>
+      <div class="brand-info">
+        <p>Venta de Accesorios y Repuestos</p>
+        <p>Tel: 809-780-9260</p>
+      </div>
+    </div>
+
+    <div class="receipt-details">
+      <div class="receipt-line">
+        <span>Cliente:</span> <span id="sInvClient">________________</span>
+      </div>
+      <div class="receipt-line">
+        <span>Fecha:</span> <span id="sInvDate">________________</span>
+      </div>
+      <hr style="border: 0; border-top: 1px dashed var(--line); margin: 8px 0;">
+      <div class="receipt-line">
+        <span>Artículo:</span> <span id="sInvItem">________________</span>
+      </div>
+      <div class="receipt-line">
+        <span>Garantía:</span> <span id="sInvWarranty">________________</span>
+      </div>
+      <hr style="border: 0; border-top: 1px dashed var(--line); margin: 8px 0;">
+      <div class="receipt-line total">
+        <span>Total Pagado:</span> <span id="sInvTotal">RD$ 0.00</span>
+      </div>
+    </div>
+
+    <div class="agreement" style="margin-top: 16px;">
+      <p style="font-size: 0.8rem; text-align: center; color: var(--text-muted); margin-bottom: 12px;">
+        Gracias por su compra. Por favor conserve este recibo para hacer válida su garantía.
+      </p>
+      <div class="agreement-signature" style="gap: 12px;">
+        <div class="sign-line" style="flex: 1;">
+          <span class="sign-under" style="height: 24px;"></span>
+          <span class="sign-label" style="font-size: 0.7rem;">Firma del Cliente</span>
+        </div>
+        <div class="sign-line" style="flex: 1;">
+          <span class="sign-under" style="height: 24px;"></span>
+          <span class="sign-label" style="font-size: 0.7rem;">Firma del Vendedor</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary btn-block" id="printSalesInvoiceBtn">Imprimir Factura</button>
+      <button class="btn-whatsapp" id="waSalesInvoiceBtn">Enviar por WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<div id="salesModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 900px;">
+    <button class="modal-close" id="closeSalesModal">&times;</button>
+    <div class="section-head" style="margin-bottom: 24px; text-align: left;">
+      <div class="kicker">VENTAS DE ARTÍCULOS</div>
+      <h2>Registro de Ventas</h2>
+      <p>Ingresa los datos del artículo vendido y la garantía aplicada.</p>
+    </div>
+
+    <div class="calc-grid" style="gap: 32px;">
+      <div class="calc-form">
+        <div class="field">
+          <label>Artículo / Producto</label>
+          <input type="text" id="salesItem" placeholder="Ej. Protector de pantalla, Cable USB">
+        </div>
+        <div class="field">
+          <label>Precio de Venta (RD$)</label>
+          <input type="number" id="salesPrice" placeholder="0.00" step="0.01">
+        </div>
+        <div class="field">
+          <label>Cliente</label>
+          <input type="text" id="salesClient" placeholder="Nombre del cliente">
+        </div>
+        <div class="field">
+          <label>Días de Garantía</label>
+          <input type="number" id="salesWarranty" placeholder="Ej. 30, 90, 365">
+        </div>
+        <button id="btnSaveSale" class="btn-primary">Registrar Venta</button>
+      </div>
+      <div class="calc-result">
+        <div class="quote-card" style="max-height: 500px; overflow-y: auto;">
+          <h3>Ventas Recientes</h3>
+          <div style="overflow-x: auto;">
+            <table class="repair-table" id="salesTable">
+              <thead>
+                <tr>
+                  <th>Artículo / Precio</th>
+                  <th>Cliente / Garantía</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Los datos se cargan dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="inventoryModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 1000px;">
+    <button class="modal-close" id="closeInventoryModal">&times;</button>
+    <div class="section-head" style="margin-bottom: 24px; text-align: left;">
+      <div class="kicker">GESTIÓN DE INVENTARIO</div>
+      <h2>Inventario de Productos</h2>
+      <p>Administra tu catálogo de artículos, controla el stock y revisa la valoración.</p>
+    </div>
+
+    <div class="inventory-tabs" style="display: flex; gap: 10px; margin-bottom: 24px;">
+      <button class="btn-tab active" onclick="switchInventoryTab('catalog')">Catálogo</button>
+      <button class="btn-tab" onclick="switchInventoryTab('adjustments')">Ajustes</button>
+      <button class="btn-tab" onclick="switchInventoryTab('reports')">Reportes</button>
+    </div>
+
+    <div id="inventoryCatalog" class="inventory-tab-content">
+      <div class="calc-grid" style="gap: 32px;">
+        <div class="calc-form">
+          <div class="field">
+            <label>Departamento</label>
+            <input type="text" id="invProdCode" placeholder="Ej. 750123456789">
+          </div>
+          <div class="field">
+            <label>Nombre del Producto</label>
+            <input type="text" id="invProdName" placeholder="Ej. Protector de pantalla">
+          </div>
+          <div class="row-two">
+            <div class="field">
+              <label>Precio Costo (RD$)</label>
+              <input type="number" id="invProdCost" placeholder="0.00" step="0.01">
+            </div>
+            <div class="field">
+              <label>Precio Venta (RD$)</label>
+              <input type="number" id="invProdSale" placeholder="0.00" step="0.01">
+            </div>
+          </div>
+          <div class="row-two">
+            <div class="field">
+              <label>Cantidad Actual</label>
+              <input type="number" id="invProdStock" placeholder="0">
+            </div>
+            <div class="field">
+              <label>Cantidad Mínima</label>
+              <input type="number" id="invProdMin" placeholder="0">
+            </div>
+          </div>
+          <div class="field">
+            <label>Categoría</label>
+            <input type="text" id="invProdCategory" placeholder="Ej. Accesorios">
+          </div>
+          <div class="field">
+            <label>Unidad</label>
+            <input type="text" id="invProdUnit" placeholder="Ej. Unidad, Pieza">
+          </div>
+          <button id="btnSaveProduct" class="btn-primary">Guardar Producto</button>
+        </div>
+        <div class="calc-result">
+          <div class="quote-card" style="max-height: 600px; overflow-y: auto;">
+            <h3>Catálogo de Productos</h3>
+            <div class="field" style="margin-bottom: 16px;">
+              <input type="text" id="invProdSearch" placeholder="Buscar producto..." oninput="renderProductTable()">
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="repair-table" id="productsTable">
+                <thead>
+                  <tr>
+                    <th>Código / Producto</th>
+                    <th>Stock / Mín</th>
+                    <th>Precio Venta</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Datos dinámicos -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="inventoryAdjustments" class="inventory-tab-content" style="display: none;">
+      <div class="calc-grid" style="gap: 32px;">
+        <div class="calc-form">
+          <h3>Ajuste de Stock</h3>
+          <div class="field">
+            <label>Producto</label>
+            <select id="adjProdSelect"></select>
+          </div>
+          <div class="field">
+            <label>Cantidad Delta (+/-)</label>
+            <input type="number" id="adjQuantity" placeholder="Ej. 5 o -2">
+          </div>
+          <div class="field">
+            <label>Motivo</label>
+            <select id="adjReason">
+              <option value="Compra">Compra / Entrada</option>
+              <option value="Venta">Venta / Salida</option>
+              <option value="Daño">Mercancía Dañada</option>
+              <option value="Robo">Robo / Pérdida</option>
+              <option value="Corrección">Corrección de Datos</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <button id="btnSaveAdjustment" class="btn-primary">Registrar Ajuste</button>
+        </div>
+        <div class="calc-result">
+          <div class="quote-card" style="max-height: 600px; overflow-y: auto;">
+            <h3>Historial de Movimientos (Kardex)</h3>
+            <div style="overflow-x: auto;">
+              <table class="repair-table" id="movementsTable">
+                <thead>
+                  <tr>
+                    <th>Fecha / Producto</th>
+                    <th>Cambio</th>
+                    <th>Motivo</th>
+                    <th>Stock Final</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Datos dinámicos -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="inventoryReports" class="inventory-tab-content" style="display: none;">
+      <div class="calc-grid" style="gap: 32px;">
+        <div class="calc-form">
+          <h3>Generar Reportes</h3>
+          <div class="field">
+            <button id="btnReportLowStock" class="btn-secondary" style="width: 100%; margin-bottom: 12px;">Reporte de Stock Bajo</button>
+            <button id="btnReportValuation" class="btn-secondary" style="width: 100%;">Valoración de Inventario</button>
+          </div>
+          <div class="quote-card" style="margin-top: 24px;">
+            <h4>Resumen General</strong>
+            <div id="inventorySummary" style="font-size: 0.95rem; line-height: 1.6;">
+              <!-- Resumen dinámico -->
+            </div>
+          </div>
+        </div>
+        <div class="calc-result">
+          <div class="quote-card" style="max-height: 600px; overflow-y: auto;">
+            <h3 id="reportTitle">Resultados del Reporte</h3>
+            <div style="overflow-x: auto;">
+              <table class="repair-table" id="reportsTable">
+                <thead>
+                  <tr id="reportHeader">
+                    <!-- Cabeceras dinámicas -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Datos dinámicos -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="invoiceModal" class="modal-overlay">
   <div class="modal-card" id="invoicePrint">
     <button class="modal-close" id="closeInvoiceModal" aria-label="Cerrar">&times;</button>
@@ -842,7 +1168,7 @@
     </div>
 
     <div class="agreement" style="margin-top: 24px;">
-      <p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">
+      <p style="font-size: 0.85rem; text-align: center; color: var(--text-muted); margin-bottom: 12px;">
         Gracias por confiar en nosotros. El equipo ha sido entregado en óptimas condiciones.
       </p>
       <div class="agreement-signature">
@@ -865,6 +1191,10 @@
 </div>
 
 <script>
+  const SUPABASE_URL = 'https://paqwrsnoxfaipxvuksli.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_PzEmnWfSBaxgopq4h3BTrg_72PW0LiG';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   const WHATSAPP_NUMBER = "18097809260"; // <-- reemplaza con tu número real (código de país + número, sin + ni espacios)
 
   const PLATFORM_LOGOS = {
@@ -900,7 +1230,8 @@
 
   function recalc(){
     const price = parseFloat(productPrice.value) || 0;
-    const qty = parseInt(productQty.value) || 1;
+    const qtyVal = parseInt(productQty.value);
+    const qty = isNaN(qtyVal) ? 1 : qtyVal;
     const shipping = parseFloat(shippingCost.value) || 0;
     const rate = parseFloat(commissionRate.value) || 0;
     const subtotal = price * qty;
@@ -942,7 +1273,8 @@
 
   function getOrderData(){
     const price = parseFloat(productPrice.value) || 0;
-    const qty = parseInt(productQty.value) || 1;
+    const qtyVal = parseInt(productQty.value);
+    const qty = isNaN(qtyVal) ? 1 : qtyVal;
     const weight = parseFloat(productWeight.value) || 0;
     const shipping = parseFloat(shippingCost.value) || 0;
     const rate = parseFloat(commissionRate.value) || 0;
@@ -986,7 +1318,15 @@
   const printBtn = document.getElementById('printBtn');
   const waFromModalBtn = document.getElementById('waFromModalBtn');
 
+  function closeAllModals(){
+    ['orderModal', 'invoiceModal', 'salesModal', 'repairModal', 'salesInvoiceModal', 'inventoryModal'].forEach(id => {
+      const m = document.getElementById(id);
+      if(m) m.classList.remove('open');
+    });
+  }
+
   function openModal(){
+    closeAllModals();
     const d = getOrderData();
     document.getElementById('rClientName').textContent = d.cName;
     document.getElementById('rClientCedula').textContent = d.cCedula;
@@ -1029,31 +1369,505 @@
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(d)}`, '_blank');
   });
 
-  /* --- Lógica de Entrada de Equipos --- */
-  let repairEntries = [];
-  try {
-    const storedData = localStorage.getItem('repair_entries_data');
-    if (storedData) {
-      const parsed = JSON.parse(storedData);
-      if (Array.isArray(parsed)) {
-        repairEntries = parsed;
-      }
+  /* --- Lógica de Ventas --- */
+  let salesEntries = [];
+  async function fetchSales() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('sales')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      salesEntries = data || [];
+      renderSalesList();
+    } catch (e) {
+      console.error('Error loading sales from Supabase:', e);
     }
-  } catch (e) {
-    console.error('Error loading repair entries from localStorage:', e);
-    repairEntries = [];
   }
 
-  function saveRepairToLocal() {
+  async function saveSalesToCloud(entry) {
     try {
-      localStorage.setItem('repair_entries_data', JSON.stringify(repairEntries));
+      const { error } = await supabaseClient
+        .from('sales')
+        .insert([entry]);
+      if (error) throw error;
     } catch (e) {
-      console.error('Error saving repair entries to localStorage:', e);
-      alert('Error al guardar los datos. Es posible que el almacenamiento local esté lleno o deshabilitado.');
+      console.error('Error saving sale to Supabase:', e);
+      alert('Error al guardar la venta en la nube.');
     }
+  }
+
+  function openSalesModal() {
+    closeAllModals();
+    document.getElementById('salesModal').classList.add('open');
+    renderSalesList();
+  }
+
+  function closeSalesModal() {
+    document.getElementById('salesModal').classList.remove('open');
+  }
+
+  function renderSalesList() {
+    const tbody = document.querySelector('#salesTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    salesEntries.forEach((entry, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><strong>${entry.item}</strong><br><small>${fmt(entry.price)}</small></td>
+        <td><strong>${entry.client}</strong><br><small>🛡️ ${entry.warranty} días</small></td>
+        <td style="display:flex; gap:8px;">
+          <button class="btn-release" style="background:var(--blue) !important;" onclick="printSaleInvoice(${index})">Imprimir</button>
+          <button class="btn-delete" onclick="deleteSaleEntry(${index})">Borrar</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function printSaleInvoice(index) {
+    closeAllModals();
+    const entry = salesEntries[index];
+    document.getElementById('sInvClient').textContent = entry.client;
+    document.getElementById('sInvDate').textContent = new Date().toLocaleString('es-DO');
+    document.getElementById('sInvItem').textContent = entry.item;
+    document.getElementById('sInvWarranty').textContent = `${entry.warranty} días`;
+    document.getElementById('sInvTotal').textContent = fmt(entry.price);
+
+    document.getElementById('salesInvoiceModal').classList.add('open');
+    window.currentSaleEntry = entry;
+  }
+
+  function closeSalesInvoiceModal() {
+    document.getElementById('salesInvoiceModal').classList.remove('open');
+    window.currentSaleEntry = null;
+  }
+
+  function printSalesInvoice() {
+    window.print();
+  }
+
+  function sendSalesInvoiceWhatsApp() {
+    const d = window.currentSaleEntry;
+    if (!d) return;
+    const msg = `Hola, adjunto la factura de venta:%0A` +
+      `Cliente: ${d.client}%0A` +
+      `Artículo: ${d.item}%0A` +
+      `Garantía: ${d.warranty} días%0A` +
+      `Total: ${fmt(d.price)}%0A` +
+      `Gracias por su compra.`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+  }
+
+  async function saveSale() {
+    const item = document.getElementById('salesItem').value.trim();
+    const priceRaw = document.getElementById('salesPrice').value.trim();
+    const client = document.getElementById('salesClient').value.trim();
+    const warranty = document.getElementById('salesWarranty').value.trim();
+
+    const price = parseFloat(priceRaw);
+
+    if (!item || isNaN(price) || !client) {
+      alert('Por favor, completa los campos obligatorios con valores válidos.');
+      return;
+    }
+
+    const entry = { item, price, client, warranty: warranty || '0' };
+    await saveSalesToCloud(entry);
+    await fetchSales();
+
+    document.getElementById('salesItem').value = '';
+    document.getElementById('salesPrice').value = '';
+    document.getElementById('salesClient').value = '';
+    document.getElementById('salesWarranty').value = '';
+  }
+
+  async function deleteSaleEntry(index) {
+    if (confirm('¿Eliminar este registro de venta?')) {
+      const entry = salesEntries[index];
+      try {
+        const { error } = await supabaseClient
+          .from('sales')
+          .delete()
+          .eq('id', entry.id);
+        if (error) throw error;
+        await fetchSales();
+      } catch (e) {
+        console.error('Error deleting sale from Supabase:', e);
+        alert('Error al eliminar la venta de la nube.');
+      }
+    }
+  }
+
+  document.getElementById('openSalesModal').addEventListener('click', (e) => {
+    e.preventDefault();
+    openSalesModal();
+  });
+  document.getElementById('closeSalesModal').addEventListener('click', closeSalesModal);
+  document.getElementById('btnSaveSale').addEventListener('click', saveSale);
+  document.getElementById('closeSalesInvoiceModal').addEventListener('click', closeSalesInvoiceModal);
+  document.getElementById('printSalesInvoiceBtn').addEventListener('click', printSalesInvoice);
+  document.getElementById('waSalesInvoiceBtn').addEventListener('click', sendSalesInvoiceWhatsApp);
+
+  // Inventory Event Listeners
+  document.getElementById('closeInventoryModal').addEventListener('click', closeInventoryModal);
+  document.getElementById('btnSaveProduct').addEventListener('click', saveProduct);
+  document.getElementById('btnSaveAdjustment').addEventListener('click', saveAdjustment);
+  document.getElementById('btnReportLowStock').addEventListener('click', renderLowStockReport);
+  document.getElementById('btnReportValuation').addEventListener('click', renderValuationReport);
+
+
+  /* --- Lógica de Entrada de Equipos --- */
+
+  let repairEntries = [];
+  async function fetchRepairs() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('repairs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      repairEntries = data || [];
+      renderRepairList();
+    } catch (e) {
+      console.error('Error loading repairs from Supabase:', e);
+    }
+  }
+
+  async function saveRepairsToCloud(entry) {
+    try {
+      const { error } = await supabaseClient
+        .from('repairs')
+        .insert([entry]);
+      if (error) throw error;
+    } catch (e) {
+      console.error('Error saving repair to Supabase:', e);
+      alert('Error al guardar la reparación en la nube.');
+    }
+  }
+
+  let inventoryProducts = [];
+  let inventoryMovements = [];
+
+  async function fetchInventory() {
+    try {
+      const { data: productsRaw, error: pError } = await supabaseClient.from('products').select('*');
+      if (pError) throw pError;
+
+      const { data: movementsRaw, error: mError } = await supabaseClient.from('product_movements').select('*');
+      if (mError) throw mError;
+
+      // Map snake_case from Supabase to camelCase for the app
+      inventoryProducts = (productsRaw || []).map(p => ({
+        id: p.id,
+        code: p.code,
+        name: p.name,
+        currentStock: p.current_stock,
+        minStock: p.min_stock,
+        costPrice: p.cost_price,
+        salePrice: p.sale_price,
+        category: p.category,
+        unit: p.unit,
+        status: p.status
+      }));
+
+      inventoryMovements = movementsRaw || [];
+      renderProductTable();
+    } catch (e) {
+      console.error('Error loading inventory from Supabase:', e);
+    }
+  }
+
+  async function saveProductToCloud(product, isUpdate = false) {
+    try {
+      // Map camelCase JS object to snake_case Supabase columns
+      const supabaseProduct = {
+        code: product.code,
+        name: product.name,
+        current_stock: product.currentStock,
+        min_stock: product.minStock,
+        cost_price: product.costPrice,
+        sale_price: product.salePrice,
+        category: product.category,
+        unit: product.unit,
+        status: product.status || 'active'
+      };
+
+      if (isUpdate) {
+        const { error } = await supabaseClient
+          .from('products')
+          .update(supabaseProduct)
+          .eq('id', product.id);
+        if (error) throw error;
+        return { success: true };
+      } else {
+        const { data, error } = await supabaseClient
+          .from('products')
+          .insert([supabaseProduct])
+          .select();
+        if (error) throw error;
+        return { success: true, data: data[0] };
+      }
+    } catch (e) {
+      console.error('Error saving product to Supabase:', e);
+      alert('Error al guardar el producto en la nube.');
+      return { success: false };
+    }
+  }
+
+  async function saveMovementToCloud(movement) {
+    try {
+      const { error } = await supabaseClient
+        .from('product_movements')
+        .insert([movement]);
+      if (error) throw error;
+    } catch (e) {
+      console.error('Error saving movement to Supabase:', e);
+    }
+  }
+
+  async function openInventoryModal() {
+    closeAllModals();
+    await fetchInventory();
+    document.getElementById('inventoryModal').classList.add('open');
+    switchInventoryTab('catalog');
+    renderProductTable();
+  }
+
+  function closeInventoryModal() {
+    document.getElementById('inventoryModal').classList.remove('open');
+  }
+
+  function switchInventoryTab(tabName) {
+    const tabs = ['catalog', 'adjustments', 'reports'];
+    tabs.forEach(tab => {
+      const content = document.getElementById(`inventory${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+      if (content) content.style.display = (tab === tabName) ? 'block' : 'none';
+    });
+
+    const buttons = document.querySelectorAll('.btn-tab');
+    buttons.forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tabName === 'catalog' ? 'catálogo' : tabName === 'adjustments' ? 'ajustes' : 'reportes'));
+    });
+
+    if (tabName === 'catalog') renderProductTable();
+    if (tabName === 'adjustments') {
+      populateAdjustmentProductSelect();
+      renderMovementsTable();
+    }
+    if (tabName === 'reports') updateInventorySummary();
+  }
+
+  async function saveProduct() {
+    const code = document.getElementById('invProdCode').value.trim();
+    const name = document.getElementById('invProdName').value.trim();
+    const costPrice = parseFloat(document.getElementById('invProdCost').value) || 0;
+    const salePrice = parseFloat(document.getElementById('invProdSale').value) || 0;
+    const currentStock = parseInt(document.getElementById('invProdStock').value) || 0;
+    const minStock = parseInt(document.getElementById('invProdMin').value) || 0;
+    const category = document.getElementById('invProdCategory').value.trim();
+    const unit = document.getElementById('invProdUnit').value.trim();
+
+    if (!code || !name) {
+      alert('El código y el nombre son obligatorios.');
+      return;
+    }
+
+    const existingIdx = inventoryProducts.findIndex(p => p.code === code);
+    if (existingIdx > -1) {
+      const oldStock = inventoryProducts[existingIdx].currentStock;
+      const updatedProduct = {
+        ...inventoryProducts[existingIdx],
+        name, costPrice, salePrice, currentStock, minStock, category, unit
+      };
+      inventoryProducts[existingIdx] = updatedProduct;
+
+      if (oldStock !== currentStock) {
+        await recordMovement(updatedProduct.id, currentStock - oldStock, 'Corrección', 'adjustment');
+      }
+      await saveProductToCloud(updatedProduct, true);
+    } else {
+      const newProd = {
+        code, name, costPrice, salePrice, currentStock, minStock, category, unit, status: 'active'
+      };
+      const result = await saveProductToCloud(newProd);
+      if (result.success && result.data) {
+        await recordMovement(result.data.id, currentStock, 'Carga Inicial', 'entry');
+      }
+    }
+
+    await fetchInventory();
+    clearProductForm();
+  }
+
+  function clearProductForm() {
+    ['invProdCode', 'invProdName', 'invProdCost', 'invProdSale', 'invProdStock', 'invProdMin', 'invProdCategory', 'invProdUnit'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  }
+
+  function renderProductTable() {
+    const search = document.getElementById('invProdSearch').value.toLowerCase();
+    const tbody = document.querySelector('#productsTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    inventoryProducts.filter(p => p.name.toLowerCase().includes(search) || p.code.toLowerCase().includes(search)).forEach((p, idx) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><strong>${p.code}</strong><br><small>${p.name}</small></td>
+        <td>${p.currentStock} / <small>${p.minStock}</small></td>
+        <td>${fmt(p.salePrice)}</td>
+        <td>
+          <button class="btn-release" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="btn-delete" onclick="deleteProduct('${p.id}')">Borrar</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function editProduct(id) {
+    const p = inventoryProducts.find(prod => prod.id === id);
+    if (!p) return;
+    document.getElementById('invProdCode').value = p.code;
+    document.getElementById('invProdName').value = p.name;
+    document.getElementById('invProdCost').value = p.costPrice;
+    document.getElementById('invProdSale').value = p.salePrice;
+    document.getElementById('invProdStock').value = p.currentStock;
+    document.getElementById('invProdMin').value = p.minStock;
+    document.getElementById('invProdCategory').value = p.category;
+    document.getElementById('invProdUnit').value = p.unit;
+  }
+
+  function deleteProduct(id) {
+    if (!confirm('¿Está seguro de eliminar este producto?')) return;
+    inventoryProducts = inventoryProducts.filter(p => p.id !== id);
+    saveInventoryData();
+    renderProductTable();
+  }
+
+  function populateAdjustmentProductSelect() {
+    const select = document.getElementById('adjProdSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="">Seleccione un producto...</option>';
+    inventoryProducts.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.code} - ${p.name} (Stock: ${p.currentStock})`;
+      select.appendChild(opt);
+    });
+  }
+
+  async function recordMovement(productId, quantity, reason, type) {
+    const prod = inventoryProducts.find(p => p.id === productId);
+    if (!prod) return;
+
+    const movement = {
+      product_id: productId,
+      amount: quantity,
+      reason: reason,
+      type: type,
+      previous_stock: prod.currentStock,
+      new_stock: prod.currentStock + quantity,
+      username: 'Admin'
+    };
+    await saveMovementToCloud(movement);
+    prod.currentStock += quantity;
+  }
+
+  async function saveAdjustment() {
+    const productId = document.getElementById('adjProdSelect').value;
+    const quantity = parseInt(document.getElementById('adjQuantity').value) || 0;
+    const reason = document.getElementById('adjReason').value;
+
+    if (!productId || quantity === 0) {
+      alert('Seleccione un producto y una cantidad válida.');
+      return;
+    }
+
+    await recordMovement(productId, quantity, reason, 'adjustment');
+    await fetchInventory();
+    renderMovementsTable();
+    populateAdjustmentProductSelect();
+    document.getElementById('adjQuantity').value = '';
+  }
+
+  function renderMovementsTable() {
+    const tbody = document.querySelector('#movementsTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    [...inventoryMovements].reverse().forEach(m => {
+      const prod = inventoryProducts.find(p => p.id === m.productId);
+      const prodName = prod ? prod.name : 'Producto eliminado';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><small>${m.date}</small><br><strong>${prodName}</strong></td>
+        <td style="color: ${m.quantity >= 0 ? 'var(--accent)' : 'var(--danger)'}">${m.quantity > 0 ? '+' + m.quantity : m.quantity}</td>
+        <td><small>${m.reason}</small></td>
+        <td><strong>${m.newStock}</strong></td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function updateInventorySummary() {
+    const summaryDiv = document.getElementById('inventorySummary');
+    if (!summaryDiv) return;
+
+    let totalCost = 0;
+    let totalSale = 0;
+    let lowStockCount = 0;
+
+    inventoryProducts.forEach(p => {
+      totalCost += p.currentStock * p.costPrice;
+      totalSale += p.currentStock * p.salePrice;
+      if (p.currentStock <= p.minStock) lowStockCount++;
+    });
+
+    summaryDiv.innerHTML = `
+      <div class="receipt-line"><span>Valor Total Costo:</span> <strong>${fmt(totalCost)}</strong></div>
+      <div class="receipt-line"><span>Valor Total Venta:</span> <strong>${fmt(totalSale)}</strong></div>
+      <div class="receipt-line"><span>Productos en Stock Bajo:</span> <strong>${lowStockCount}</strong></div>
+    `;
+  }
+
+  function renderLowStockReport() {
+    const tbody = document.querySelector('#reportsTable tbody');
+    const header = document.getElementById('reportHeader');
+    if (!tbody || !header) return;
+
+    header.innerHTML = '<th>Producto</th><th>Stock Actual</th><th>Mínimo</th><th>Déficit</th>';
+    tbody.innerHTML = '';
+    document.getElementById('reportTitle').textContent = 'Reporte de Stock Bajo';
+
+    inventoryProducts.filter(p => p.currentStock <= p.minStock).forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${p.name}</td><td>${p.currentStock}</td><td>${p.minStock}</td><td style="color: var(--danger)">${p.minStock - p.currentStock}</td>`;
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderValuationReport() {
+    const tbody = document.querySelector('#reportsTable tbody');
+    const header = document.getElementById('reportHeader');
+    if (!tbody || !header) return;
+
+    header.innerHTML = '<th>Producto</th><th>Cantidad</th><th>Costo Total</th><th>Venta Total</th>';
+    tbody.innerHTML = '';
+    document.getElementById('reportTitle').textContent = 'Valoración de Inventario';
+
+    inventoryProducts.forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${p.name}</td><td>${p.currentStock}</td><td>${fmt(p.currentStock * p.costPrice)}</td><td>${fmt(p.currentStock * p.salePrice)}</td>`;
+      tbody.appendChild(row);
+    });
   }
 
   function openRepairModal() {
+    closeAllModals();
+
     document.getElementById('repairModal').classList.add('open');
     initRepairDate();
     renderRepairList();
@@ -1066,7 +1880,10 @@
   function initRepairDate() {
     const dateInput = document.getElementById('repairDate');
     if (dateInput) {
-      dateInput.value = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      const localDate = new Date(Date.now() - offset).toISOString().split('T')[0];
+      dateInput.value = localDate;
     }
   }
 
@@ -1148,15 +1965,24 @@
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
   }
 
-  function deleteRepairEntry(index) {
+  async function deleteRepairEntry(index) {
     if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-      repairEntries.splice(index, 1);
-      saveRepairToLocal();
-      renderRepairList();
+      const entry = repairEntries[index];
+      try {
+        const { error } = await supabaseClient
+          .from('repairs')
+          .delete()
+          .eq('id', entry.id);
+        if (error) throw error;
+        await fetchRepairs();
+      } catch (e) {
+        console.error('Error deleting repair from Supabase:', e);
+        alert('Error al eliminar la reparación de la nube.');
+      }
     }
   }
 
-  document.getElementById('btnSaveRepair').addEventListener('click', () => {
+  document.getElementById('btnSaveRepair').addEventListener('click', async () => {
     const client = document.getElementById('repairClientName').value.trim();
     const cedula = document.getElementById('repairCedula').value.trim();
     const phone = document.getElementById('repairPhone').value.trim();
@@ -1173,9 +1999,8 @@
     }
 
     const entry = { client, cedula, phone, imei, brand, condition, missing, price, date };
-    repairEntries.push(entry);
-    saveRepairToLocal();
-    renderRepairList();
+    await saveRepairsToCloud(entry);
+    await fetchRepairs();
 
     // Reset form
     document.getElementById('repairClientName').value = '';
@@ -1195,16 +2020,20 @@
   document.getElementById('waInvoiceBtn').addEventListener('click', sendInvoiceWhatsApp);
 
   window.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('repairModal') || e.target === document.getElementById('invoiceModal')) {
+    if (e.target === document.getElementById('repairModal') || e.target === document.getElementById('invoiceModal') || e.target === document.getElementById('salesInvoiceModal') || e.target === document.getElementById('inventoryModal')) {
       if (e.target.id === 'repairModal') closeRepairModal();
       if (e.target.id === 'invoiceModal') closeInvoiceModal();
+      if (e.target.id === 'salesInvoiceModal') closeSalesInvoiceModal();
+      if (e.target.id === 'inventoryModal') closeInventoryModal();
     }
   });
 
   // Initialize repair module on load
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     initRepairDate();
-    renderRepairList();
+    await fetchSales();
+    await fetchRepairs();
+    await fetchInventory();
   });
 
   recalc();

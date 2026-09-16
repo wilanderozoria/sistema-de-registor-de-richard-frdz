@@ -1615,6 +1615,21 @@
     }
   }
 
+  async function deleteProductFromCloud(id) {
+    try {
+      const { error } = await supabaseClient
+        .from('products')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (e) {
+      console.error('Error deleting product from Supabase:', e);
+      alert('Error al eliminar el producto de la nube.');
+      return { success: false };
+    }
+  }
+
   async function saveMovementToCloud(movement) {
     try {
       const { error } = await supabaseClient
@@ -1740,11 +1755,14 @@
     document.getElementById('invProdUnit').value = p.unit;
   }
 
-  function deleteProduct(id) {
+  async function deleteProduct(id) {
     if (!confirm('¿Está seguro de eliminar este producto?')) return;
-    inventoryProducts = inventoryProducts.filter(p => p.id !== id);
-    saveInventoryData();
-    renderProductTable();
+
+    const result = await deleteProductFromCloud(id);
+    if (result.success) {
+      inventoryProducts = inventoryProducts.filter(p => p.id !== id);
+      renderProductTable();
+    }
   }
 
   function populateAdjustmentProductSelect() {

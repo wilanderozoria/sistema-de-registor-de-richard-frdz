@@ -979,8 +979,9 @@
     <div id="inventoryCatalog" class="inventory-tab-content">
       <div class="calc-grid" style="gap: 32px;">
         <div class="calc-form">
+          <input type="hidden" id="invProdId" value="">
           <div class="field">
-            <label>Departamento</label>
+            <label>Código de producto</label>
             <input type="text" id="invProdCode" placeholder="Ej. 750123456789">
           </div>
           <div class="field">
@@ -1571,7 +1572,16 @@
         status: p.status
       }));
 
-      inventoryMovements = movementsRaw || [];
+      inventoryMovements = (movementsRaw || []).map(m => ({
+        id: m.id,
+        productId: m.product_id,
+        quantity: Number(m.amount) || 0,
+        reason: m.reason,
+        type: m.type,
+        previousStock: Number(m.previous_stock) || 0,
+        newStock: Number(m.new_stock) || 0,
+        date: m.created_at || m.date || ''
+      }));
       renderProductTable();
     } catch (e) {
       console.error('Error loading inventory from Supabase:', e);
@@ -1610,7 +1620,7 @@
       }
     } catch (e) {
       console.error('Error saving product to Supabase:', e);
-      alert('Error al guardar el producto en la nube.');
+      alert('Error al guardar el producto en la nube.\n\nDetalle: ' + (e.message || e.details || JSON.stringify(e)));
       return { success: false };
     }
   }
@@ -1636,8 +1646,11 @@
         .from('product_movements')
         .insert([movement]);
       if (error) throw error;
+      return { success: true };
     } catch (e) {
       console.error('Error saving movement to Supabase:', e);
+      alert('El stock fue actualizado, pero no se pudo registrar el movimiento en la nube.');
+      return { success: false };
     }
   }
 
@@ -1688,26 +1701,29 @@
       return;
     }
 
-    const existingIdx = inventoryProducts.findIndex(p => p.code === code);
+    const editId = document.getElementById('invProdId').value;
+    const existingIdx = editId ? inventoryProducts.findIndex(p => p.id === editId) : -1;
     if (existingIdx > -1) {
       const oldStock = inventoryProducts[existingIdx].currentStock;
       const updatedProduct = {
         ...inventoryProducts[existingIdx],
-        name, costPrice, salePrice, currentStock, minStock, category, unit
+        code, name, costPrice, salePrice, currentStock, minStock, category, unit
       };
-      inventoryProducts[existingIdx] = updatedProduct;
+      const result = await saveProductToCloud(updatedProduct, true);
+      if (!result.success) return;
 
+      inventoryProducts[existingIdx] = updatedProduct;
       if (oldStock !== currentStock) {
-        await recordMovement(updatedProduct.id, currentStock - oldStock, 'Corrección', 'adjustment');
+        await recordMovement(updatedProduct.id, currentStock - oldStock, 'Corrección', 'adjustment', oldStock, currentStock);
       }
-      await saveProductToCloud(updatedProduct, true);
     } else {
       const newProd = {
         code, name, costPrice, salePrice, currentStock, minStock, category, unit, status: 'active'
       };
       const result = await saveProductToCloud(newProd);
-      if (result.success && result.data) {
-        await recordMovement(result.data.id, currentStock, 'Carga Inicial', 'entry');
+      if (!result.success) return;
+      if (result.data) {
+        await recordMovement(result.data.id, currentStock, 'Carga Inicial', 'entry', 0, currentStock);
       }
     }
 
@@ -1716,7 +1732,7 @@
   }
 
   function clearProductForm() {
-    ['invProdCode', 'invProdName', 'invProdCost', 'invProdSale', 'invProdStock', 'invProdMin', 'invProdCategory', 'invProdUnit'].forEach(id => {
+    ['invProdId', 'invProdCode', 'invProdName', 'invProdCost', 'invProdSale', 'invProdStock', 'invProdMin', 'invProdCategory', 'invProdUnit'].forEach(id => {
       document.getElementById(id).value = '';
     });
   }
@@ -1745,6 +1761,7 @@
   function editProduct(id) {
     const p = inventoryProducts.find(prod => prod.id === id);
     if (!p) return;
+    document.getElementById('invProdId').value = p.id;
     document.getElementById('invProdCode').value = p.code;
     document.getElementById('invProdName').value = p.name;
     document.getElementById('invProdCost').value = p.costPrice;
@@ -1777,21 +1794,17 @@
     });
   }
 
-  async function recordMovement(productId, quantity, reason, type) {
-    const prod = inventoryProducts.find(p => p.id === productId);
-    if (!prod) return;
-
+  async function recordMovement(productId, quantity, reason, type, previousStock, newStock) {
     const movement = {
       product_id: productId,
       amount: quantity,
       reason: reason,
       type: type,
-      previous_stock: prod.currentStock,
-      new_stock: prod.currentStock + quantity,
+      previous_stock: previousStock,
+      new_stock: newStock,
       username: 'Admin'
     };
-    await saveMovementToCloud(movement);
-    prod.currentStock += quantity;
+    return saveMovementToCloud(movement);
   }
 
   async function saveAdjustment() {
@@ -1804,7 +1817,21 @@
       return;
     }
 
-    await recordMovement(productId, quantity, reason, 'adjustment');
+    const productIndex = inventoryProducts.findIndex(p => p.id === productId);
+    if (productIndex === -1) {
+      alert('No se encontró el producto seleccionado. Actualice el inventario e intente de nuevo.');
+      return;
+    }
+
+    const product = inventoryProducts[productIndex];
+    const previousStock = Number(product.currentStock) || 0;
+    const newStock = previousStock + quantity;
+    const updatedProduct = { ...product, currentStock: newStock };
+    const updateResult = await saveProductToCloud(updatedProduct, true);
+    if (!updateResult.success) return;
+
+    inventoryProducts[productIndex] = updatedProduct;
+    await recordMovement(productId, quantity, reason, 'adjustment', previousStock, newStock);
     await fetchInventory();
     renderMovementsTable();
     populateAdjustmentProductSelect();
